@@ -30,6 +30,7 @@ function Show-SgpStatus {
     Write-Host "  scoop_aria2_enabled: $(Get-SgpAria2Enabled)"
     Write-Host "  config_path: $($status.ConfigPath)"
     Write-Host "  scoop_download_script: $($status.DownloadScript)"
+    Write-Host "  scoop_core_script: $($status.CoreScript)"
     Write-Host '  proxies:'
     if ($status.Proxies.Count -eq 0) {
         Write-Host '    (none)'

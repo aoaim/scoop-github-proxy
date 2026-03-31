@@ -5,6 +5,7 @@ Set-StrictMode -Version Latest
 . "$PSScriptRoot\..\lib\scoop-config.ps1"
 
 $baseDirectory = Join-Path $PSScriptRoot '..\lib'
+Assert-SgpGitAvailable
 Initialize-SgpConfig -BaseDirectory $baseDirectory | Out-Null
 $patched = Install-SgpPatch -BaseDirectory $baseDirectory
 Set-SgpAria2Enabled -Enabled $false

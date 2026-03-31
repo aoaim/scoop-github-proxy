@@ -202,3 +202,24 @@ function Set-SgpEnabled {
     $config.enabled = $Enabled
     Save-SgpConfig -Config $config -BaseDirectory $BaseDirectory | Out-Null
 }
+
+function Assert-SgpGitAvailable {
+    $git = Get-Command git -ErrorAction SilentlyContinue
+    if ($null -eq $git) {
+        throw "scoop-github-proxy requires git. Install it first with 'scoop install git'."
+    }
+}
+
+function Remove-SgpPersistDirectory {
+    param(
+        [string]$BaseDirectory = $PSScriptRoot
+    )
+
+    $persistDir = Get-SgpPersistDirectory -BaseDirectory $BaseDirectory
+    if (Test-Path $persistDir) {
+        Remove-Item -LiteralPath $persistDir -Recurse -Force
+        return $true
+    }
+
+    return $false
+}

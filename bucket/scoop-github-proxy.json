@@ -1,10 +1,10 @@
 {
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Add ordered GitHub proxy fallback support to Scoop downloads",
   "homepage": "https://github.com/aoaim/scoop-github-proxy",
   "license": "MIT",
-  "url": "https://github.com/aoaim/scoop-github-proxy/releases/download/v0.0.1/scoop-github-proxy-0.0.1.zip",
-  "hash": "fd6818cdff5a10a70c63132e66556934e27895f0fc60948cd40ebe3bc584f253",
+  "url": "https://github.com/aoaim/scoop-github-proxy/releases/download/v0.0.2/scoop-github-proxy-0.0.2.zip",
+  "hash": "<FILL_ME>",
   "extract_dir": "scoop-github-proxy",
   "bin": [
     [
@@ -12,6 +12,7 @@
       "scoop-github-proxy"
     ]
   ],
+  "depends": "git",
   "post_install": [
     "& \"$dir\\scripts\\install.ps1\""
   ],
@@ -22,6 +23,7 @@
   },
   "notes": [
     "Default proxy is 'https://gh-proxy.org'. Run 'scoop-github-proxy proxy add https://mirror.example.com' to add your own proxy.",
+    "This package requires git and depends on Scoop's git-based update path.",
     "This package only supports Scoop's default downloader and will set 'aria2-enabled' to false.",
     "Run 'scoop-github-proxy status' to verify patch and proxy status."
   ]
