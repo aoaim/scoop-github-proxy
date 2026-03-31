@@ -1,11 +1,7 @@
 Set-StrictMode -Version Latest
 
 function Get-SgpScoopConfigPath {
-    if ([string]::IsNullOrWhiteSpace($env:SCOOP)) {
-        throw 'Unable to resolve Scoop root. Set the SCOOP environment variable.'
-    }
-
-    return Join-Path $env:SCOOP 'config.json'
+    return Join-Path (Resolve-SgpScoopRoot -BaseDirectory $PSScriptRoot) 'config.json'
 }
 
 function Get-SgpScoopConfig {

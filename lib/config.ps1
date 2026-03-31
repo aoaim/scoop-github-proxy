@@ -8,6 +8,32 @@ function Get-SgpRoot {
     return [System.IO.Path]::GetFullPath((Join-Path $BaseDirectory '..'))
 }
 
+function Resolve-SgpScoopRoot {
+    param(
+        [string]$BaseDirectory = $PSScriptRoot
+    )
+
+    if (![string]::IsNullOrWhiteSpace($env:SCOOP)) {
+        return $env:SCOOP
+    }
+
+    $current = [System.IO.Path]::GetFullPath($BaseDirectory)
+    while ($null -ne $current) {
+        $name = [System.IO.Path]::GetFileName($current)
+        if ($name -eq 'apps') {
+            return Split-Path $current -Parent
+        }
+
+        $parent = Split-Path $current -Parent
+        if ($parent -eq $current) {
+            break
+        }
+        $current = $parent
+    }
+
+    throw 'Unable to resolve Scoop root.'
+}
+
 function Get-SgpPersistDirectory {
     param(
         [string]$BaseDirectory = $PSScriptRoot
@@ -15,10 +41,7 @@ function Get-SgpPersistDirectory {
 
     $persistRoot = $env:SCOOP_PERSIST_DIR
     if ([string]::IsNullOrWhiteSpace($persistRoot)) {
-        if ([string]::IsNullOrWhiteSpace($env:SCOOP)) {
-            throw 'Unable to resolve Scoop root. Set the SCOOP environment variable.'
-        }
-        $persistRoot = Join-Path $env:SCOOP 'persist'
+        $persistRoot = Join-Path (Resolve-SgpScoopRoot -BaseDirectory $BaseDirectory) 'persist'
     }
 
     return Join-Path $persistRoot 'scoop-github-proxy'

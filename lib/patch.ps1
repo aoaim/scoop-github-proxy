@@ -3,11 +3,7 @@ Set-StrictMode -Version Latest
 . "$PSScriptRoot\config.ps1"
 
 function Get-SgpScoopRoot {
-    if ([string]::IsNullOrWhiteSpace($env:SCOOP)) {
-        throw 'Unable to resolve Scoop root. Set the SCOOP environment variable.'
-    }
-
-    return $env:SCOOP
+    return Resolve-SgpScoopRoot -BaseDirectory $PSScriptRoot
 }
 
 function Get-SgpDownloadScriptPath {
@@ -30,10 +26,10 @@ function Get-SgpPatchedBlock {
     $markers = Get-SgpPatchMarkers
     $configPath = Get-SgpConfigPath -BaseDirectory $BaseDirectory
 
-    $block = @"
-$($markers.Start)
+    $block = @'
+__START__
 function Get-SgpRuntimeConfigPath {
-    return '$($configPath -replace "'", "''")'
+    return '__CONFIG_PATH__'
 }
 
 function Get-SgpRuntimeConfig {
@@ -158,8 +154,12 @@ Set-Item -Path Function:\Invoke-Download -Value {
     param($url, $to, $cookies, $progress)
     Invoke-SgpDownloadWithFallback $url $to $cookies $progress
 }
-$($markers.End)
-"@
+__END__
+'@
+
+    $block = $block.Replace('__START__', $markers.Start)
+    $block = $block.Replace('__END__', $markers.End)
+    $block = $block.Replace('__CONFIG_PATH__', ($configPath -replace "'", "''"))
 
     return $block.TrimEnd()
 }

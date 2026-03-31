@@ -12,7 +12,6 @@
       "scoop-github-proxy"
     ]
   ],
-  "persist": "persist",
   "post_install": [
     "& \"$dir\\scripts\\install.ps1\""
   ],
