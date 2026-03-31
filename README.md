@@ -113,6 +113,17 @@ scoop update scoop
 scoop-github-proxy repair
 ```
 
+更准确地说，安装 `scoop-github-proxy` 后，如果你要更新 Scoop 本体，推荐按下面的顺序手动执行：
+
+```powershell
+cd $env:USERPROFILE\scoop\apps\scoop\current
+git restore lib/download.ps1 lib/core.ps1
+scoop update scoop
+scoop-github-proxy repair
+```
+
+也就是说，当前版本下，Scoop 本体更新不是完全透明的自动流程，而是需要先恢复被 patch 的文件，再更新 Scoop，最后重新 `repair`。
+
 你也可以先检查状态：
 
 ```powershell
