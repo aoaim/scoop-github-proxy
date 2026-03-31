@@ -8,7 +8,7 @@ Set-StrictMode -Version Latest
 
 function Show-SgpUsage {
     @(
-        'Usage: scoop github-proxy <command> [options]'
+        'Usage: scoop-github-proxy <command> [options]'
         ''
         'Commands:'
         '  enable                         Enable proxy chaining'
@@ -40,10 +40,10 @@ function Show-SgpStatus {
     }
 
     if ($status.RepairNeeded) {
-        Write-Host "Run 'scoop github-proxy repair' after 'scoop update scoop'." -ForegroundColor Yellow
+        Write-Host "Run 'scoop-github-proxy repair' after 'scoop update scoop'." -ForegroundColor Yellow
     }
     if (Get-SgpAria2Enabled) {
-        Write-Host "Run 'scoop config aria2-enabled false' or 'scoop github-proxy repair'." -ForegroundColor Yellow
+        Write-Host "Run 'scoop config aria2-enabled false' or 'scoop-github-proxy repair'." -ForegroundColor Yellow
     }
 }
 

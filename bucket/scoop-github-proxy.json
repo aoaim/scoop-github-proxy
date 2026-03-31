@@ -21,8 +21,8 @@
     ]
   },
   "notes": [
-    "Default proxy is 'https://gh-proxy.org'. Run 'scoop github-proxy proxy add https://mirror.example.com' to add your own proxy.",
+    "Default proxy is 'https://gh-proxy.org'. Run 'scoop-github-proxy proxy add https://mirror.example.com' to add your own proxy.",
     "This package only supports Scoop's default downloader and will set 'aria2-enabled' to false.",
-    "Run 'scoop github-proxy status' to verify patch and proxy status."
+    "Run 'scoop-github-proxy status' to verify patch and proxy status."
   ]
 }

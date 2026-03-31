@@ -17,23 +17,23 @@
 1. 作为独立 Scoop 包安装，不要求用户改用其他命令。
 2. 配置持久化保存在 `persist` 目录。
 3. 支持多个代理地址，按顺序重试。
-4. `scoop update scoop` 覆盖补丁后，可通过 `scoop github-proxy repair` 重新注入。
+4. `scoop update scoop` 覆盖补丁后，可通过 `scoop-github-proxy repair` 重新注入。
 
 ## 用户命令
 
 ```powershell
-scoop github-proxy enable
-scoop github-proxy disable
-scoop github-proxy status
-scoop github-proxy repair
-scoop github-proxy proxy list
-scoop github-proxy proxy add https://mirror1.example.com
-scoop github-proxy proxy remove https://mirror1.example.com
+scoop-github-proxy enable
+scoop-github-proxy disable
+scoop-github-proxy status
+scoop-github-proxy repair
+scoop-github-proxy proxy list
+scoop-github-proxy proxy add https://mirror1.example.com
+scoop-github-proxy proxy remove https://mirror1.example.com
 ```
 
 默认代理链首项是 `https://gh-proxy.org`。
 
-安装后，Scoop 会识别包里生成的 `scoop-github-proxy` shim，因此可以直接使用 `scoop github-proxy ...`。
+安装后可以直接使用 `scoop-github-proxy ...`。
 
 ## 安装方法
 
@@ -55,37 +55,37 @@ scoop install scoop-github-proxy
 查看当前状态：
 
 ```powershell
-scoop github-proxy status
+scoop-github-proxy status
 ```
 
 添加你自己的代理，优先级会排在默认代理之后：
 
 ```powershell
-scoop github-proxy proxy add https://mirror.example.com
+scoop-github-proxy proxy add https://mirror.example.com
 ```
 
 查看代理列表：
 
 ```powershell
-scoop github-proxy proxy list
+scoop-github-proxy proxy list
 ```
 
 关闭代理链：
 
 ```powershell
-scoop github-proxy disable
+scoop-github-proxy disable
 ```
 
 重新开启代理链：
 
 ```powershell
-scoop github-proxy enable
+scoop-github-proxy enable
 ```
 
 如果执行过 `scoop update scoop`，导致补丁被覆盖，可以重新修复：
 
 ```powershell
-scoop github-proxy repair
+scoop-github-proxy repair
 ```
 
 ## Scoop 本体更新后
@@ -96,13 +96,13 @@ scoop github-proxy repair
 
 ```powershell
 scoop update scoop
-scoop github-proxy repair
+scoop-github-proxy repair
 ```
 
 你也可以先检查状态：
 
 ```powershell
-scoop github-proxy status
+scoop-github-proxy status
 ```
 
 如果输出里显示 `repair_needed: True`，就说明需要重新执行 `repair`。
@@ -209,15 +209,15 @@ git push origin v0.0.1
 3. 默认使用 `https://gh-proxy.org`
 4. 支持多个代理按顺序尝试，最后回退原始 URL
 5. 支持命令：
-   `scoop github-proxy enable`
-   `scoop github-proxy disable`
-   `scoop github-proxy status`
-   `scoop github-proxy repair`
-   `scoop github-proxy proxy list`
-   `scoop github-proxy proxy add <url>`
-   `scoop github-proxy proxy remove <url>`
+   `scoop-github-proxy enable`
+   `scoop-github-proxy disable`
+   `scoop-github-proxy status`
+   `scoop-github-proxy repair`
+   `scoop-github-proxy proxy list`
+   `scoop-github-proxy proxy add <url>`
+   `scoop-github-proxy proxy remove <url>`
 6. 安装时自动将 Scoop 的 `aria2-enabled` 设为 `false`
 7. 配置写入 `persist\scoop-github-proxy\config.json`
-8. `scoop update scoop` 后可通过 `scoop github-proxy repair` 重新注入补丁
+8. `scoop update scoop` 后可通过 `scoop-github-proxy repair` 重新注入补丁
 9. GitHub Actions 自动完成 release 打包、SHA256 计算和 bucket manifest 回填
 10. README 中补充完整卸载与恢复指南，包括在 Scoop 仓库中执行 `git restore lib/download.ps1`
