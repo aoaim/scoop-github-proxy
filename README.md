@@ -46,8 +46,10 @@ scoop bucket add <bucket-name> <bucket-repo-url>
 例如：
 
 ```powershell
-scoop bucket add aoaim https://github.com/aoaim/scoop-bucket
+scoop bucket add github-proxy https://github.com/aoaim/scoop-github-proxy
 ```
+
+这里的 `github-proxy` 是推荐的 bucket 名称；技术上你也可以换成任意你喜欢的本地名称。
 
 然后安装本工具：
 
@@ -99,12 +101,50 @@ scoop github-proxy enable
 scoop github-proxy repair
 ```
 
+## Scoop 本体更新后
+
+`Scoop` 本体更新时，`$env:SCOOP\apps\scoop\current\lib\download.ps1` 可能会被新版本覆盖，因此 `scoop-github-proxy` 注入的补丁也可能丢失。
+
+更新 `Scoop` 本体后，建议执行：
+
+```powershell
+scoop update scoop
+scoop github-proxy repair
+```
+
+你也可以先检查状态：
+
+```powershell
+scoop github-proxy status
+```
+
+如果输出里显示 `repair_needed: True`，就说明需要重新执行 `repair`。
+
 之后就正常使用 Scoop 即可，例如：
 
 ```powershell
 scoop install neovim
 scoop update git
 ```
+
+## 改动范围与卸载
+
+安装 `scoop-github-proxy` 后，当前版本会修改以下内容：
+
+1. patch Scoop 的下载脚本：`$env:SCOOP\apps\scoop\current\lib\download.ps1`
+2. 修改 Scoop 配置：将 `aria2-enabled` 设为 `false`
+3. 写入自身配置：`$env:SCOOP\persist\scoop-github-proxy\config.json`
+
+它不会修改系统代理、注册表、浏览器代理或其他包管理器配置，影响范围仅限 Scoop。
+
+这意味着它对 Scoop 本身有一定侵入性，但不是系统级侵入。
+
+卸载时，当前版本会移除注入到 Scoop 下载脚本中的补丁块；但不会自动恢复安装前的 `aria2-enabled` 原值，也不会自动删除 `persist\scoop-github-proxy` 下的配置文件。
+
+如果你需要完全恢复到安装前状态，目前还需要手动：
+
+1. 根据你的需要重新设置 `scoop config aria2-enabled true`
+2. 删除 `persist\scoop-github-proxy` 目录
 
 ## 目录说明
 
