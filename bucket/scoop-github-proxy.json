@@ -4,7 +4,7 @@
   "homepage": "https://github.com/aoaim/scoop-github-proxy",
   "license": "MIT",
   "url": "https://github.com/aoaim/scoop-github-proxy/releases/download/v0.0.1/scoop-github-proxy-0.0.1.zip",
-  "hash": "a53e0a28704d2671a8afdf11f12bc8c7203fb27df54dc5ac690e1390fc098738",
+  "hash": "fd6818cdff5a10a70c63132e66556934e27895f0fc60948cd40ebe3bc584f253",
   "extract_dir": "scoop-github-proxy",
   "bin": [
     [
