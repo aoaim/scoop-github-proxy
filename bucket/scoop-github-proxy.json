@@ -1,10 +1,10 @@
 {
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Add ordered GitHub proxy fallback support to Scoop downloads",
   "homepage": "https://github.com/aoaim/scoop-github-proxy",
   "license": "MIT",
-  "url": "https://github.com/aoaim/scoop-github-proxy/releases/download/v0.0.2/scoop-github-proxy-0.0.2.zip",
-  "hash": "bf886b6ec70278d7399f5451d4654d53bb4f3c52eeca15e8f249bcf030c6ac2d",
+  "url": "https://github.com/aoaim/scoop-github-proxy/releases/download/v0.0.1/scoop-github-proxy-0.0.1.zip",
+  "hash": "10e5b011065711222b4e9fdd182c41cb50e2e67390a4027e11a9528c8e64e99a",
   "extract_dir": "scoop-github-proxy",
   "bin": [
     [
