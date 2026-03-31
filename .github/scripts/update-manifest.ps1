@@ -1,5 +1,3 @@
-Set-StrictMode -Version Latest
-
 param(
     [Parameter(Mandatory = $true)]
     [string]$Version,
@@ -12,6 +10,8 @@ param(
 
     [string]$ManifestPath = (Join-Path $PSScriptRoot '..\..\bucket\scoop-github-proxy.json')
 )
+
+Set-StrictMode -Version Latest
 
 $manifestFile = [System.IO.Path]::GetFullPath($ManifestPath)
 $manifest = Get-Content $manifestFile -Raw | ConvertFrom-Json

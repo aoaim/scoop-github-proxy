@@ -1,5 +1,3 @@
-Set-StrictMode -Version Latest
-
 param(
     [Parameter(Mandatory = $true)]
     [string]$Version,
@@ -9,6 +7,8 @@ param(
 
     [string]$RepositoryRoot = (Join-Path $PSScriptRoot '..\..')
 )
+
+Set-StrictMode -Version Latest
 
 $repoRoot = [System.IO.Path]::GetFullPath($RepositoryRoot)
 $outputRoot = [System.IO.Path]::GetFullPath($OutputDirectory)
@@ -45,6 +45,6 @@ Compress-Archive -Path (Join-Path $stageRoot '*') -DestinationPath $assetPath -F
 
 $hash = (Get-FileHash -Path $assetPath -Algorithm SHA256).Hash.ToLower()
 
-Write-Host "ASSET_PATH=$assetPath"
-Write-Host "ASSET_NAME=$assetName"
-Write-Host "ASSET_SHA256=$hash"
+"ASSET_PATH=$assetPath"
+"ASSET_NAME=$assetName"
+"ASSET_SHA256=$hash"
