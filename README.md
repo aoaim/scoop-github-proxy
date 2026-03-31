@@ -10,7 +10,7 @@
 2. `raw.githubusercontent.com/*`
 3. `api.github.com/*/releases/*`
 
-当前版本只支持 Scoop 默认下载器，不兼容 `aria2` 下载路径。安装或执行 `repair` 时会将 Scoop 配置中的 `aria2-enabled` 设为 `false`。
+该程序只支持 Scoop 默认下载器，不兼容 `aria2` 下载路径。安装或执行 `repair` 时会将 Scoop 配置中的 `aria2-enabled` 设为 `false`。
 
 ## 设计目标
 
@@ -114,7 +114,7 @@ scoop update git
 
 ## 改动范围与卸载
 
-安装 `scoop-github-proxy` 后，当前版本会修改以下内容：
+安装 `scoop-github-proxy` 后，该程序会修改以下内容：
 
 1. patch Scoop 的下载脚本：`$env:SCOOP\apps\scoop\current\lib\download.ps1`
 2. 修改 Scoop 配置：将 `aria2-enabled` 设为 `false`
@@ -124,7 +124,7 @@ scoop update git
 
 这意味着它对 Scoop 本身有一定侵入性，但不是系统级侵入。
 
-卸载时，当前版本会移除注入到 Scoop 下载脚本中的补丁块，但不会自动恢复安装前的 `aria2-enabled` 原值，也不会自动删除 `persist\scoop-github-proxy` 下的配置文件。
+卸载时，该程序会优先在 Scoop 本体 git 仓库中执行 `git restore lib/download.ps1`，把 `download.ps1` 恢复到 Scoop 仓库 `HEAD` 对应的版本；如果 git 恢复失败，才退回为移除注入的补丁块。它不会自动恢复安装前的 `aria2-enabled` 原值，也不会自动删除 `persist\scoop-github-proxy` 下的配置文件。
 
 `persist\scoop-github-proxy` 是本工具主动写入的配置目录，不依赖 manifest 的 `persist` 字段。
 
@@ -136,7 +136,7 @@ scoop uninstall scoop-github-proxy --purge
 
 卸载后，如果你想确认是否已经恢复原样，可以直接查看 `download.ps1` 中是否已没有 `scoop-github-proxy` 的补丁标记。
 
-如果你希望把 Scoop 的 `download.ps1` 彻底恢复到当前 Scoop 仓库版本，最简单的方式是直接使用 git。
+如果你希望手动确认或自行恢复，最简单的方式也是直接使用 git。
 
 `Scoop` 本体目录本身就是一个 git 仓库：
 
@@ -144,13 +144,13 @@ scoop uninstall scoop-github-proxy --purge
 $env:USERPROFILE\scoop\apps\scoop\current
 ```
 
-如果你已经卸载了 `scoop-github-proxy`，但仍然怀疑 `download.ps1` 和当前 Scoop 仓库版本不一致，也可以在该目录下手动恢复：
+如果你已经卸载了 `scoop-github-proxy`，但仍然怀疑 `download.ps1` 和 Scoop 仓库版本不一致，也可以在该目录下手动恢复：
 
 ```powershell
 git restore lib/download.ps1
 ```
 
-这会把 `download.ps1` 恢复到当前 Scoop 仓库 `HEAD` 对应的版本。
+这会把 `download.ps1` 恢复到 Scoop 仓库 `HEAD` 对应的版本。
 
 推荐的完整卸载流程：
 

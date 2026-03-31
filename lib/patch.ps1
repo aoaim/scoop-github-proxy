@@ -11,6 +11,34 @@ function Get-SgpDownloadScriptPath {
     return Join-Path $scoopRoot 'apps\scoop\current\lib\download.ps1'
 }
 
+function Get-SgpScoopRepoPath {
+    $scoopRoot = Get-SgpScoopRoot
+    return Join-Path $scoopRoot 'apps\scoop\current'
+}
+
+function Restore-SgpDownloadScriptFromGit {
+    param(
+        [string]$DownloadScriptPath = $(Get-SgpDownloadScriptPath)
+    )
+
+    $repoPath = Get-SgpScoopRepoPath
+    if (!(Test-Path (Join-Path $repoPath '.git'))) {
+        return $false
+    }
+
+    $git = Get-Command git -ErrorAction SilentlyContinue
+    if ($null -eq $git) {
+        return $false
+    }
+
+    & $git.Source -C $repoPath restore --worktree --source=HEAD -- 'lib/download.ps1' | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        return $false
+    }
+
+    return Test-Path $DownloadScriptPath
+}
+
 function Get-SgpPatchMarkers {
     return [ordered]@{
         Start = '# scoop-github-proxy begin'
@@ -208,6 +236,10 @@ function Remove-SgpPatch {
     param(
         [string]$DownloadScriptPath = $(Get-SgpDownloadScriptPath)
     )
+
+    if (Restore-SgpDownloadScriptFromGit -DownloadScriptPath $DownloadScriptPath) {
+        return $true
+    }
 
     if (!(Test-SgpPatchPresent -DownloadScriptPath $DownloadScriptPath)) {
         return $false
