@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          $version = '${{ github.ref_name }}' -replace '^v', ''
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Package release asset
+        id: package
+        shell: pwsh
+        run: |
+          $outputDir = Join-Path $env:RUNNER_TEMP 'release'
+          New-Item -Path $outputDir -ItemType Directory -Force | Out-Null
+          $lines = & "$env:GITHUB_WORKSPACE\.github\scripts\package-release.ps1" -Version '${{ steps.version.outputs.version }}' -OutputDirectory $outputDir
+          $lines | ForEach-Object { Write-Host $_ }
+          foreach ($line in $lines) {
+            if ($line -match '^ASSET_PATH=(.+)$') { "asset_path=$($Matches[1])" >> $env:GITHUB_OUTPUT }
+            if ($line -match '^ASSET_NAME=(.+)$') { "asset_name=$($Matches[1])" >> $env:GITHUB_OUTPUT }
+            if ($line -match '^ASSET_SHA256=(.+)$') { "asset_sha256=$($Matches[1])" >> $env:GITHUB_OUTPUT }
+          }
+
+      - name: Update manifest
+        shell: pwsh
+        run: |
+          & "$env:GITHUB_WORKSPACE\.github\scripts\update-manifest.ps1" -Version '${{ steps.version.outputs.version }}' -Sha256 '${{ steps.package.outputs.asset_sha256 }}' -Repository '${{ github.repository }}'
+
+      - name: Commit manifest update
+        shell: pwsh
+        run: |
+          git checkout "${{ github.event.repository.default_branch }}"
+          git add bucket/scoop-github-proxy.json
+          git diff --cached --quiet
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host 'Manifest already up to date.'
+            exit 0
+          }
+          git commit -m "chore(release): update manifest for v${{ steps.version.outputs.version }}"
+          git push origin "${{ github.event.repository.default_branch }}"
+
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          gh release create "v${{ steps.version.outputs.version }}" "${{ steps.package.outputs.asset_path }}" --title "v${{ steps.version.outputs.version }}" --notes "Release v${{ steps.version.outputs.version }}"
