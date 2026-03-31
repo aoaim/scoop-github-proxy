@@ -141,7 +141,7 @@ scoop uninstall scoop-github-proxy --purge
 `Scoop` 本体目录本身就是一个 git 仓库：
 
 ```powershell
-C:\Users\miao\scoop\apps\scoop\current
+$env:USERPROFILE\scoop\apps\scoop\current
 ```
 
 如果你已经卸载了 `scoop-github-proxy`，但仍然怀疑 `download.ps1` 和当前 Scoop 仓库版本不一致，也可以在该目录下手动恢复：
@@ -156,7 +156,7 @@ git restore lib/download.ps1
 
 ```powershell
 scoop uninstall scoop-github-proxy --purge
-cd C:\Users\miao\scoop\apps\scoop\current
+cd $env:USERPROFILE\scoop\apps\scoop\current
 git restore lib/download.ps1
 ```
 
@@ -217,9 +217,3 @@ git push origin v0.0.1
 8. `scoop update scoop` 后可通过 `scoop github-proxy repair` 重新注入补丁
 9. GitHub Actions 自动完成 release 打包、SHA256 计算和 bucket manifest 回填
 10. README 中补充完整卸载与恢复指南，包括在 Scoop 仓库中执行 `git restore lib/download.ps1`
-
-修复：
-
-1. 修复安装时对 `SCOOP` 环境变量的强依赖
-2. 修复补丁模板变量插值错误
-3. 移除错误的 manifest `persist` 配置
