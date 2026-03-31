@@ -62,7 +62,6 @@ function Get-SgpDefaultConfig {
             'https://gh-proxy.org'
         )
         fallback_to_origin = $true
-        original_aria2_enabled = $null
         match = [ordered]@{
             release_download = $true
             raw_githubusercontent = $true
@@ -111,9 +110,6 @@ function Get-SgpConfig {
     }
     if ($null -eq $config.fallback_to_origin) {
         $config | Add-Member -NotePropertyName fallback_to_origin -NotePropertyValue $true
-    }
-    if ($null -eq $config.PSObject.Properties['original_aria2_enabled']) {
-        $config | Add-Member -NotePropertyName original_aria2_enabled -NotePropertyValue $null
     }
     if ($null -eq $config.log_enabled) {
         $config | Add-Member -NotePropertyName log_enabled -NotePropertyValue $true
@@ -205,31 +201,4 @@ function Set-SgpEnabled {
     $config = Get-SgpConfig -BaseDirectory $BaseDirectory
     $config.enabled = $Enabled
     Save-SgpConfig -Config $config -BaseDirectory $BaseDirectory | Out-Null
-}
-
-function Set-SgpOriginalAria2Enabled {
-    param(
-        [Parameter(Mandatory = $true)]
-        [AllowNull()]
-        [Nullable[bool]]$Value,
-        [string]$BaseDirectory = $PSScriptRoot
-    )
-
-    $config = Get-SgpConfig -BaseDirectory $BaseDirectory
-    $config.original_aria2_enabled = $Value
-    Save-SgpConfig -Config $config -BaseDirectory $BaseDirectory | Out-Null
-}
-
-function Remove-SgpPersistDirectory {
-    param(
-        [string]$BaseDirectory = $PSScriptRoot
-    )
-
-    $persistDir = Get-SgpPersistDirectory -BaseDirectory $BaseDirectory
-    if (Test-Path $persistDir) {
-        Remove-Item -LiteralPath $persistDir -Recurse -Force
-        return $true
-    }
-
-    return $false
 }

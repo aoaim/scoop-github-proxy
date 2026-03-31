@@ -27,10 +27,8 @@ function Show-SgpStatus {
     Write-Host "  enabled: $($status.Enabled)"
     Write-Host "  patch_present: $($status.PatchPresent)"
     Write-Host "  repair_needed: $($status.RepairNeeded)"
-    Write-Host "  backup_present: $($status.BackupPresent)"
     Write-Host "  scoop_aria2_enabled: $(Get-SgpAria2Enabled)"
     Write-Host "  config_path: $($status.ConfigPath)"
-    Write-Host "  backup_path: $($status.BackupPath)"
     Write-Host "  scoop_download_script: $($status.DownloadScript)"
     Write-Host '  proxies:'
     if ($status.Proxies.Count -eq 0) {

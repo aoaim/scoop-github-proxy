@@ -6,8 +6,6 @@ Set-StrictMode -Version Latest
 
 $baseDirectory = Join-Path $PSScriptRoot '..\lib'
 Initialize-SgpConfig -BaseDirectory $baseDirectory | Out-Null
-$originalAria2Enabled = Get-SgpAria2EnabledOrNull
-Set-SgpOriginalAria2Enabled -Value $originalAria2Enabled -BaseDirectory $baseDirectory
 $patched = Install-SgpPatch -BaseDirectory $baseDirectory
 Set-SgpAria2Enabled -Enabled $false
 

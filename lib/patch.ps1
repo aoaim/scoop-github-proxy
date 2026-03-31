@@ -11,82 +11,6 @@ function Get-SgpDownloadScriptPath {
     return Join-Path $scoopRoot 'apps\scoop\current\lib\download.ps1'
 }
 
-function Get-SgpBackupDirectory {
-    param(
-        [string]$BaseDirectory = $PSScriptRoot
-    )
-
-    return Join-Path (Get-SgpPersistDirectory -BaseDirectory $BaseDirectory) 'backup'
-}
-
-function Get-SgpDownloadScriptBackupPath {
-    param(
-        [string]$BaseDirectory = $PSScriptRoot
-    )
-
-    return Join-Path (Get-SgpBackupDirectory -BaseDirectory $BaseDirectory) 'download.ps1.bak'
-}
-
-function Get-SgpBackupMetadataPath {
-    param(
-        [string]$BaseDirectory = $PSScriptRoot
-    )
-
-    return Join-Path (Get-SgpBackupDirectory -BaseDirectory $BaseDirectory) 'metadata.json'
-}
-
-function Test-SgpBackupPresent {
-    param(
-        [string]$BaseDirectory = $PSScriptRoot
-    )
-
-    return Test-Path (Get-SgpDownloadScriptBackupPath -BaseDirectory $BaseDirectory)
-}
-
-function Backup-SgpDownloadScript {
-    param(
-        [string]$BaseDirectory = $PSScriptRoot,
-        [string]$DownloadScriptPath = $(Get-SgpDownloadScriptPath)
-    )
-
-    $backupDir = Get-SgpBackupDirectory -BaseDirectory $BaseDirectory
-    if (!(Test-Path $backupDir)) {
-        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
-    }
-
-    $backupPath = Get-SgpDownloadScriptBackupPath -BaseDirectory $BaseDirectory
-    $metadataPath = Get-SgpBackupMetadataPath -BaseDirectory $BaseDirectory
-    if (Test-Path $backupPath) {
-        return $false
-    }
-
-    Copy-Item $DownloadScriptPath $backupPath -Force
-    $hash = (Get-FileHash -Path $DownloadScriptPath -Algorithm SHA256).Hash.ToLower()
-    $metadata = [ordered]@{
-        created_at = (Get-Date).ToString('o')
-        source_path = $DownloadScriptPath
-        backup_path = $backupPath
-        sha256 = $hash
-    } | ConvertTo-Json -Depth 4
-    [System.IO.File]::WriteAllText($metadataPath, $metadata + [Environment]::NewLine, [System.Text.UTF8Encoding]::new($false))
-    return $true
-}
-
-function Restore-SgpDownloadScriptBackup {
-    param(
-        [string]$BaseDirectory = $PSScriptRoot,
-        [string]$DownloadScriptPath = $(Get-SgpDownloadScriptPath)
-    )
-
-    $backupPath = Get-SgpDownloadScriptBackupPath -BaseDirectory $BaseDirectory
-    if (!(Test-Path $backupPath)) {
-        return $false
-    }
-
-    Copy-Item $backupPath $DownloadScriptPath -Force
-    return $true
-}
-
 function Get-SgpPatchMarkers {
     return [ordered]@{
         Start = '# scoop-github-proxy begin'
@@ -274,7 +198,6 @@ function Install-SgpPatch {
         throw 'Unsupported Scoop version: patch anchor not found.'
     }
 
-    Backup-SgpDownloadScript -BaseDirectory $BaseDirectory -DownloadScriptPath $DownloadScriptPath | Out-Null
     $patchBlock = Get-SgpPatchedBlock -BaseDirectory $BaseDirectory
     $updated = $content.Replace($anchor, "$patchBlock`r`n`r`n$anchor")
     [System.IO.File]::WriteAllText($DownloadScriptPath, $updated, [System.Text.UTF8Encoding]::new($false))
@@ -283,13 +206,8 @@ function Install-SgpPatch {
 
 function Remove-SgpPatch {
     param(
-        [string]$BaseDirectory = $PSScriptRoot,
         [string]$DownloadScriptPath = $(Get-SgpDownloadScriptPath)
     )
-
-    if (Restore-SgpDownloadScriptBackup -BaseDirectory $BaseDirectory -DownloadScriptPath $DownloadScriptPath) {
-        return $true
-    }
 
     if (!(Test-SgpPatchPresent -DownloadScriptPath $DownloadScriptPath)) {
         return $false
@@ -314,8 +232,6 @@ function Get-SgpPatchStatus {
         Proxies = @($config.proxies)
         PatchPresent = Test-SgpPatchPresent
         RepairNeeded = -not (Test-SgpPatchPresent)
-        BackupPresent = Test-SgpBackupPresent -BaseDirectory $BaseDirectory
-        BackupPath = Get-SgpDownloadScriptBackupPath -BaseDirectory $BaseDirectory
         DownloadScript = Get-SgpDownloadScriptPath
         ConfigPath = Get-SgpConfigPath -BaseDirectory $BaseDirectory
     }

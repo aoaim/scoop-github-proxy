@@ -38,15 +38,6 @@ function Get-SgpAria2Enabled {
     return [bool]$config.'aria2-enabled'
 }
 
-function Get-SgpAria2EnabledOrNull {
-    $config = Get-SgpScoopConfig
-    if ($null -eq $config.PSObject.Properties['aria2-enabled']) {
-        return $null
-    }
-
-    return [bool]$config.'aria2-enabled'
-}
-
 function Set-SgpAria2Enabled {
     param(
         [Parameter(Mandatory = $true)]
@@ -61,15 +52,4 @@ function Set-SgpAria2Enabled {
     }
 
     Save-SgpScoopConfig -Config $config
-}
-
-function Remove-SgpAria2Enabled {
-    $config = Get-SgpScoopConfig
-    if ($null -ne $config.PSObject.Properties['aria2-enabled']) {
-        $config.PSObject.Properties.Remove('aria2-enabled')
-        Save-SgpScoopConfig -Config $config
-        return $true
-    }
-
-    return $false
 }
