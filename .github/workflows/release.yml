@@ -39,6 +39,11 @@ jobs:
             if ($line -match '^ASSET_SHA256=(.+)$') { "asset_sha256=$($Matches[1])" >> $env:GITHUB_OUTPUT }
           }
 
+      - name: Switch to default branch
+        shell: pwsh
+        run: |
+          git switch -C "${{ github.event.repository.default_branch }}" "origin/${{ github.event.repository.default_branch }}"
+
       - name: Update manifest
         shell: pwsh
         run: |
@@ -47,7 +52,6 @@ jobs:
       - name: Commit manifest update
         shell: pwsh
         run: |
-          git checkout "${{ github.event.repository.default_branch }}"
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add bucket/scoop-github-proxy.json
