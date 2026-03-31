@@ -98,6 +98,14 @@ scoop-github-proxy repair
 `Scoop` 本体更新时，`$env:SCOOP\apps\scoop\current\lib\download.ps1` 可能会被新版本覆盖，因此 `scoop-github-proxy` 注入的补丁也可能丢失。
 `$env:SCOOP\apps\scoop\current\lib\core.ps1` 中的 Git 代理逻辑也可能被新版本覆盖。
 
+在安装 `scoop-github-proxy` 的状态下直接执行 `scoop update` 时，Scoop 可能会提示：
+
+```text
+WARN  Uncommitted changes detected. Update aborted.
+```
+
+这表示 Scoop 本体更新被中止，因为 `lib/download.ps1` 和 `lib/core.ps1` 已被本程序修改；但 bucket 更新仍然会继续执行。
+
 更新 `Scoop` 本体后，建议执行：
 
 ```powershell
