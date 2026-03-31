@@ -19,7 +19,7 @@
 3. 支持多个代理地址，按顺序重试。
 4. `scoop update scoop` 覆盖补丁后，可通过 `scoop github-proxy repair` 重新注入。
 
-## 计划中的用户命令
+## 用户命令
 
 ```powershell
 scoop github-proxy enable
@@ -36,6 +36,8 @@ scoop github-proxy proxy remove https://mirror1.example.com
 安装后，Scoop 会识别包里生成的 `scoop-github-proxy` shim，因此可以直接使用 `scoop github-proxy ...`。
 
 ## 安装方法
+
+当前仓库本身就是 bucket。
 
 ```powershell
 scoop bucket add github-proxy https://github.com/aoaim/scoop-github-proxy
@@ -126,6 +128,8 @@ scoop update git
 
 卸载时，该程序会优先在 Scoop 本体 git 仓库中执行 `git restore lib/download.ps1`，把 `download.ps1` 恢复到 Scoop 仓库 `HEAD` 对应的版本；如果 git 恢复失败，才退回为移除注入的补丁块。它不会自动恢复安装前的 `aria2-enabled` 原值，也不会自动删除 `persist\scoop-github-proxy` 下的配置文件。
 
+如果你自己也手动修改过 Scoop 仓库里的 `lib/download.ps1`，`git restore` 会把这些本地修改一并丢弃。
+
 `persist\scoop-github-proxy` 是本工具主动写入的配置目录，不依赖 manifest 的 `persist` 字段。
 
 推荐卸载方式：
@@ -176,7 +180,7 @@ scoop config aria2-enabled true
 
 可以用 GitHub Actions 自动完成发布流程。
 
-当你 push 一个形如 `v0.0.1` 的 tag 时，工作流会自动：
+当你 push 一个形如 `v0.0.x` 的 tag 时，工作流会自动：
 
 1. 打包发布资产 `scoop-github-proxy-0.0.1.zip`
 2. 计算 ZIP 的 SHA256
