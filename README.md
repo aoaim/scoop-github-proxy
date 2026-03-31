@@ -35,6 +35,77 @@ scoop github-proxy proxy remove https://mirror1.example.com
 
 安装后，Scoop 会识别包里生成的 `scoop-github-proxy` shim，因此可以直接使用 `scoop github-proxy ...`。
 
+## 安装方法
+
+先把包含 `scoop-github-proxy.json` 的 bucket 加到 Scoop：
+
+```powershell
+scoop bucket add <bucket-name> <bucket-repo-url>
+```
+
+例如：
+
+```powershell
+scoop bucket add aoaim https://github.com/aoaim/scoop-bucket
+```
+
+然后安装本工具：
+
+```powershell
+scoop install scoop-github-proxy
+```
+
+安装完成后，`scoop-github-proxy` 会：
+
+1. 给 Scoop 的默认下载器注入 GitHub 代理链逻辑
+2. 把 Scoop 配置中的 `aria2-enabled` 设为 `false`
+3. 默认使用 `https://gh-proxy.org`
+
+## 使用方法
+
+查看当前状态：
+
+```powershell
+scoop github-proxy status
+```
+
+添加你自己的代理，优先级会排在默认代理之后：
+
+```powershell
+scoop github-proxy proxy add https://mirror.example.com
+```
+
+查看代理列表：
+
+```powershell
+scoop github-proxy proxy list
+```
+
+关闭代理链：
+
+```powershell
+scoop github-proxy disable
+```
+
+重新开启代理链：
+
+```powershell
+scoop github-proxy enable
+```
+
+如果执行过 `scoop update scoop`，导致补丁被覆盖，可以重新修复：
+
+```powershell
+scoop github-proxy repair
+```
+
+之后就正常使用 Scoop 即可，例如：
+
+```powershell
+scoop install neovim
+scoop update git
+```
+
 ## 目录说明
 
 1. `bucket/`: Scoop bucket manifest
