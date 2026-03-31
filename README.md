@@ -9,7 +9,8 @@
 1. `github.com/*/releases/download/*`
 2. `raw.githubusercontent.com/*`
 3. `api.github.com/*/releases/*`
-4. `https://github.com/*.git`
+4. `https://github.com/<owner>/<repo>`
+5. `https://github.com/<owner>/<repo>.git`
 
 该程序只支持 Scoop 默认下载器，不兼容 `aria2` 下载路径。安装或执行 `repair` 时会将 Scoop 配置中的 `aria2-enabled` 设为 `false`。
 该程序要求系统中可用 `git`，建议先安装 `scoop install git`。
@@ -252,9 +253,17 @@ git push origin v0.0.2
 
 已实现：
 
-1. 支持 GitHub 仓库地址的 `clone` / `fetch` / `pull` / `ls-remote` 代理
+1. 支持 GitHub 仓库地址（带或不带 `.git`）的 `clone` / `fetch` / `pull` / `ls-remote` 代理
 2. 对 `scoop update scoop`、bucket 更新、`scoop bucket add` 等 GitHub 仓库流量应用同样的代理链
 3. 当流量命中代理链时，明确在终端提示正在尝试哪个 proxy URL
 4. 新增 `git` 硬依赖检查，并在 manifest 中声明 `depends: git`
 5. 验证多代理故障切换：错误 proxy 失败后自动切换到下一个 proxy
 6. 卸载与手动恢复说明更新为同时恢复 `lib/download.ps1` 和 `lib/core.ps1`
+
+### 0.0.3
+
+已实现：
+
+1. 修复 `git pull -q`、`git fetch -q` 这类未显式传入 remote 名称时的默认 `origin` 解析
+2. 让 `scoop update` 的 bucket 更新路径也能识别 GitHub 仓库地址并尝试代理
+3. 保持 Git 流量命中代理时输出 `INFO  scoop-github-proxy: trying git proxy ...`

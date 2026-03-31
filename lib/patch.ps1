@@ -263,7 +263,7 @@ function Test-SgpGitHubRepoUrl([string]$url) {
         return $false
     }
 
-    return $url -match '^https://github\.com/.+\.git/?$'
+    return $url -match '^https://github\.com/[^/]+/[^/]+(?:\.git)?/?$'
 }
 
 function ConvertTo-SgpProxyUrl([string]$url, [string]$proxyBase) {
@@ -314,6 +314,7 @@ function Get-SgpGitRemoteNameIndex($argumentList) {
                     return $nextIndex
                 }
             }
+            return -2
         }
     }
 
@@ -371,7 +372,10 @@ Set-Item -Path Function:\Invoke-Git -Value {
         $originalUrl = [string]$ArgumentList[$repoUrlIndex]
     } else {
         $remoteNameIndex = Get-SgpGitRemoteNameIndex $ArgumentList
-        if ($remoteNameIndex -ge 0) {
+        if ($remoteNameIndex -eq -2) {
+            $remoteName = 'origin'
+            $originalUrl = Get-SgpRemoteUrl $WorkingDirectory $remoteName
+        } elseif ($remoteNameIndex -ge 0) {
             $remoteName = [string]$ArgumentList[$remoteNameIndex]
             $originalUrl = Get-SgpRemoteUrl $WorkingDirectory $remoteName
         }
@@ -389,6 +393,16 @@ Set-Item -Path Function:\Invoke-Git -Value {
             $candidateArgs[$repoUrlIndex] = $candidate
         } elseif ($remoteNameIndex -ge 0) {
             $candidateArgs[$remoteNameIndex] = $candidate
+        } elseif ($remoteNameIndex -eq -2) {
+            $opIndex = [Array]::IndexOf($candidateArgs, (($gitOps | Where-Object { $candidateArgs -contains $_ }) | Select-Object -First 1))
+            if ($opIndex -ge 0) {
+                $insertAt = $opIndex + 1
+                if ($insertAt -lt $candidateArgs.Count) {
+                    $candidateArgs = @($candidateArgs[0..$opIndex] + $candidate + $candidateArgs[$insertAt..($candidateArgs.Count - 1)])
+                } else {
+                    $candidateArgs = @($candidateArgs + $candidate)
+                }
+            }
         }
         if ($candidate -ne $originalUrl) {
             info "scoop-github-proxy: trying git proxy $candidate"
@@ -448,7 +462,7 @@ function Install-SgpPatch {
     }
 
     $downloadAnchor = '# Setup proxy globally'
-    $coreAnchor = 'function Invoke-Git {'
+    $coreAnchor = 'function Invoke-GitLog {'
     if (!$downloadContent.Contains($downloadAnchor)) {
         throw 'Unsupported Scoop version: patch anchor not found.'
     }
